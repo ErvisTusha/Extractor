@@ -35,9 +35,9 @@ DOWNLOAD(){
     OUTPUT=$2
     
     # if wget is installed then use wget else use check if curl is installed
-    if ! command -v wget >/dev/null 2>&1; then
+    if  command -v wget >/dev/null 2>&1; then
         wget -q "$URL" -O "$OUTPUT"
-        elif ! command -v curl >/dev/null 2>&1; then
+        elif  command -v curl >/dev/null 2>&1; then
         curl -sL "$URL" -o "$OUTPUT"
         elif command -v python >/dev/null 2>&1; then
         python -c "import urllib; urllib.urlretrieve('$URL', '$OUTPUT')"
