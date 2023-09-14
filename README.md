@@ -1,6 +1,6 @@
 # Extractor
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.1-blue)
 
 ## Overview
 
@@ -17,7 +17,7 @@ Extractor is a Bash script utility designed to handle the extraction of various 
 
 - Bash shell
 - root or sudo privileges for installation/uninstallation
-- curl for updating
+- wget or curl or python for updating
 - Required utilities for each supported file format (e.g., tar, unzip, etc.)
 
 ## Installation
@@ -33,9 +33,15 @@ sudo ./extractor.sh install
 ```bash
 # To extract a file
 $ extractor your_file.tar.gz
-
+$ extractor your_file.tar your_file.zip your_file.tar.gz
 # To specify an output directory
 $ extractor -o output_directory your_file.tar.gz
+$ extractor -o output_directory your_file.tar your_file.zip your_file.tar.gz
+$ extractor --output output_directory your_file.tar.gz
+$ extractor --output output_directory your_file.tar your_file.zip your_file.tar.gz
+$ extractor your_file.tar.gz -o output_directory
+$ extractor your_file.tar your_file.zip your_file.tar.gz -o output_directory
+
 
 # To uninstall
 $ extractor uninstall

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Version
-VERSION="1.0.0"
+VERSION="1.0.1"
 
 SCRIPT="extractor"
 #SCRIPT NAME
@@ -12,47 +12,48 @@ SCRIPT_URL="https://raw.githubusercontent.com/ErvisTusha/extractor/main/extracto
 OUTPUT_DIR="./"
 
 #function check if the user has root or sudo privileges
-CHECK_ROOT(){
-    if ! (( EUID == 0 )); then
+IS_SUDO() {
+    if ! ((EUID == 0)); then
         echo "Please run as root or with sudo privileges"
         exit 1
     fi
 }
 
-
-
-#check if tool is installed
-CHECK_TOOL(){
-    if ! command -v $1 >/dev/null 2>&1; then
-        echo "Error: $1 is not installed"
-        exit 1
+#check if tool is installed return true if installed else false
+IS_INSTALLED() {
+    if command -v $1 >/dev/null 2>&1; then
+        #return true
+        return 0
+    else
+        #return false
+        echo "Error: $1 is required"
+        return 1
     fi
 }
 
 #function to download files
-DOWNLOAD(){
+DOWNLOAD() {
     URL=$1
     OUTPUT=$2
-    
+
     # if wget is installed then use wget else use check if curl is installed
-    if  command -v wget >/dev/null 2>&1; then
-        wget -q "$URL" -O "$OUTPUT"
-        elif  command -v curl >/dev/null 2>&1; then
-        curl -sL "$URL" -o "$OUTPUT"
-        elif command -v python >/dev/null 2>&1; then
+    if IS_INSTALLED "wget"; then
+        wget -q --show-progress "$URL" -O "$OUTPUT"
+    elif IS_INSTALLED "curl"; then
+        curl -s -L "$URL" -o "$OUTPUT"
+    elif IS_INSTALLED "python"; then
         python -c "import urllib; urllib.urlretrieve('$URL', '$OUTPUT')"
-        echo "python -c \"import urllib; urllib.urlretrieve('$URL', '$OUTPUT')\""
     else
-        echo "Error: wget or curl is not installed. Please install one of them and try again."
+        echo "Error: wget or curl  or python is required to download files"
         exit 1
     fi
-    
+
 }
 
 #function install the script
-INSTALL(){
+INSTALL() {
     #check if the user has root or sudo privileges
-    CHECK_ROOT
+    IS_SUDO
     #check if /usr/local/bin/$SCRIPT exists
     if [ -f /usr/local/bin/$SCRIPT ]; then
         echo "$SCRIPT_NAME is already installed"
@@ -76,9 +77,9 @@ INSTALL(){
     exit 0
 }
 
-UNINSTALL(){
+UNINSTALL() {
     #check if the user has root or sudo privileges
-    CHECK_ROOT
+    IS_SUDO
     #check if /usr/local/bin/$SCRIPT exists
     if [ ! -f /usr/local/bin/$SCRIPT ]; then
         echo "$SCRIPT_NAME is not installed"
@@ -90,19 +91,19 @@ UNINSTALL(){
     exit 0
 }
 
-UPDATE(){
+UPDATE() {
     #downdload VERSION from github
     #check if the user has root or sudo privileges
-    CHECK_ROOT
+    IS_SUDO
     #if /usr/local/bin/$SCRIPT does not exist then run install
     if [ ! -f /usr/local/bin/$SCRIPT ]; then
         echo "$SCRIPT_NAME is not installed"
         INSTALL
     fi
-    
+
     #Download the latest version from github to tmp
     echo "Downloading the latest version..."
-    DOWNLOAD "$SCRIPT_URL"  /tmp/$SCRIPT
+    DOWNLOAD "$SCRIPT_URL" /tmp/$SCRIPT
     #check if the download was successful
     if ! [ $? -eq 0 ]; then
         echo "Error: Failed to download the latest version"
@@ -132,7 +133,6 @@ UPDATE(){
     exit 0
 }
 
-
 USAGE() {
     echo "Usage: $SCRIPT_NAME [OPTION]... [FILE]..."
     echo "Extracts the given files"
@@ -150,12 +150,13 @@ USAGE() {
     exit 0
 }
 
-
-
 #extract the file to the output directory
-EXTRACT_FILE(){
-    #check if tool is installed
-    CHECK_TOOL "$1"
+EXTRACT_FILE() {
+    #check if tool is not installed exit
+    if ! IS_INSTALLED "$1"; then
+        echo "Exiting..."
+        exit 1
+    fi
     #extract the file
     echo "$1 $2"
     $1 $2
@@ -164,49 +165,50 @@ EXTRACT_FILE(){
 EXTRACT() {
     #FIXME ASK THE USER IF THEY WANT TO REPLACE THE FILE
     case $1 in
-        *.tar.gz|*.tgz) EXTRACT_FILE "tar" "-xzf $1 -C $2" ;;
-        *.tar) EXTRACT_FILE "tar" "-xf $1 -C $2" ;;
-        *.zip) EXTRACT_FILE "unzip" "-o -q $1 -d $2" ;;
+    *.tar.gz | *.tgz) EXTRACT_FILE "tar" "-xzf $1 -C $2" ;;
+    *.tar) EXTRACT_FILE "tar" "-xf $1 -C $2" ;;
+    *.zip) EXTRACT_FILE "unzip" "-o -q $1 -d $2" ;;
         #TODO SUPPORT MORE FILE TYPES
+    *)
+        echo "Error: $1 is not supported"
+        exit 1
+        ;;
     esac
 }
 
 #if no arguments are given, print usage
 if [[ $# -eq 0 ]]; then
     USAGE
-    exit 0
 fi
 
 ARG_LIST=$@
 
-
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -h|--help)
-            USAGE
+    -h | --help)
+        USAGE
         ;;
-        -v|--version)
-            USAGE
+    -v | --version)
+        USAGE
         ;;
-        -o|--output)
-            OUTPUT_DIR=$2
-            shift 2
+    -o | --output)
+        OUTPUT_DIR=$2
+        shift 2
         ;;
-        install)
-            INSTALL
+    install)
+        INSTALL
         ;;
-        uninstall)
-            UNINSTALL
+    uninstall)
+        UNINSTALL
         ;;
-        update)
-            UPDATE
+    update)
+        UPDATE
         ;;
-        *)
-            shift
+    *)
+        shift
         ;;
     esac
 done
-
 
 #for each file skip -o , --output  or arg is equal to OUTPUT_DIR
 for file in $ARG_LIST; do
@@ -223,10 +225,10 @@ for file in $ARG_LIST; do
         echo "Error: $file is empty"
         exit 1
     fi
-    
+
     #create the output directory
     mkdir -p "$OUTPUT_DIR"
-    
+
     EXTRACT "$file" "$OUTPUT_DIR"
 done
 
