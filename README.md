@@ -33,7 +33,10 @@ sudo ./extractor.sh install
 ```bash
 # To extract a file
 $ extractor your_file.tar.gz
+
+# To extract multiple files
 $ extractor your_file.tar your_file.zip your_file.tar.gz
+
 # To specify an output directory
 $ extractor -o output_directory your_file.tar.gz
 $ extractor -o output_directory your_file.tar your_file.zip your_file.tar.gz

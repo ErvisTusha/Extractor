@@ -1,15 +1,12 @@
 #!/bin/bash
+######################################################################
+# Author: Ervis Tusha
+# Email: ERVISTUSHA[at]GMAIL.COM
+# Github: Github: https://github.com/ErvisTusha
+# Twitter: https://X.com/ET
+# LinkedIn: https://linkedin.com/in/ErvisTusha
+# License: MIT LICENSE
 
-#Version
-VERSION="1.0.1"
-
-SCRIPT="extractor"
-#SCRIPT NAME
-SCRIPT_NAME="Extractor"
-#SCRIPT URL
-SCRIPT_URL="https://raw.githubusercontent.com/ErvisTusha/extractor/main/extractor.sh"
-#OUTPUT DIRECTORY
-OUTPUT_DIR="./"
 
 #function check if the user has root or sudo privileges
 IS_SUDO() {
@@ -126,7 +123,15 @@ UPDATE() {
     #compare the two versions
     if [[ "$NEW_VERSION" == "$CURRENT_VERSION" ]]; then
         echo "You already have the latest version"
-        exit 0
+        #ask the user if they want to reinstall the script else exit
+        read -p "Do you want to reinstall the script? [y/n]: " -n 1 -r
+        echo ""
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            INSTALL
+        else
+            echo "Exiting..."
+            exit 0
+        fi
     fi
     #copy the downloaded file to /usr/local/bin/$SCRIPT
     cp /tmp/$SCRIPT /usr/local/bin/$SCRIPT
@@ -137,6 +142,22 @@ UPDATE() {
     echo "$SCRIPT_NAME new version is $NEW_VERSION"
     exit 0
 }
+
+
+######################################################################
+
+
+#Version
+VERSION="1.0.1"
+
+SCRIPT="extractor"
+#SCRIPT NAME
+SCRIPT_NAME="Extractor"
+#SCRIPT URL
+SCRIPT_URL="https://raw.githubusercontent.com/ErvisTusha/extractor/main/extractor.sh"
+#OUTPUT DIRECTORY
+OUTPUT_DIR="./"
+
 
 USAGE() {
     echo "Usage: $SCRIPT_NAME [OPTION]... [FILE]..."
