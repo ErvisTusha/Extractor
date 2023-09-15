@@ -37,9 +37,9 @@ DOWNLOAD() {
     OUTPUT=$2
 
     # if wget is installed then use wget else use check if curl is installed
-    if ! IS_INSTALLED "wget"; then
+    if IS_INSTALLED "wget"; then
         wget -q --show-progress "$URL" -O "$OUTPUT"
-    elif ! IS_INSTALLED "curl"; then
+    elif IS_INSTALLED "curl"; then
         curl -s -L "$URL" -o "$OUTPUT"
     elif IS_INSTALLED "python"; then
         #fixme check python version
