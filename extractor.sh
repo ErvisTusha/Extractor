@@ -7,7 +7,6 @@
 # LinkedIn: https://linkedin.com/in/ErvisTusha
 # License: MIT LICENSE
 
-
 #function check if the user has root or sudo privileges
 IS_SUDO() {
     if ! ((EUID == 0)); then
@@ -126,9 +125,7 @@ UPDATE() {
         #ask the user if they want to reinstall the script else exit
         read -p "Do you want to reinstall the script? [y/n]: " -n 1 -r
         echo ""
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            INSTALL
-        else
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
             echo "Exiting..."
             exit 0
         fi
@@ -143,9 +140,7 @@ UPDATE() {
     exit 0
 }
 
-
 ######################################################################
-
 
 #Version
 VERSION="1.0.1"
@@ -157,7 +152,6 @@ SCRIPT_NAME="Extractor"
 SCRIPT_URL="https://raw.githubusercontent.com/ErvisTusha/extractor/main/extractor.sh"
 #OUTPUT DIRECTORY
 OUTPUT_DIR="./"
-
 
 USAGE() {
     echo "Usage: $SCRIPT_NAME [OPTION]... [FILE]..."
