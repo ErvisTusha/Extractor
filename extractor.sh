@@ -37,17 +37,22 @@ DOWNLOAD() {
     OUTPUT=$2
 
     # if wget is installed then use wget else use check if curl is installed
-    if IS_INSTALLED "wget"; then
+    if ! IS_INSTALLED "wget"; then
         wget -q --show-progress "$URL" -O "$OUTPUT"
-    elif IS_INSTALLED "curl"; then
+    elif ! IS_INSTALLED "curl"; then
         curl -s -L "$URL" -o "$OUTPUT"
     elif IS_INSTALLED "python"; then
-        python -c "import urllib; urllib.urlretrieve('$URL', '$OUTPUT')"
+        #fixme check python version
+        #if python version is 2 then use urllib else use urllib.request
+        if python -c 'import sys; exit(0 if sys.version_info.major == 2 else 1)'; then
+            python -c "import urllib; urllib.urlretrieve('$URL', '$OUTPUT')"
+        else
+            python -c "import urllib.request; urllib.request.urlretrieve('$URL', '$OUTPUT')"
+        fi
     else
         echo "Error: wget or curl  or python is required to download files"
         exit 1
     fi
-
 }
 
 #function install the script
