@@ -76,7 +76,7 @@ INSTALL() {
     chmod +x /usr/local/bin/$SCRIPT
     echo "$SCRIPT_NAME installed successfully"
     #print the version
-    echo "$SCRIPT_NAME version $(grep "VERSION=" /usr/local/bin/$SCRIPT -m 1 | cut -d "=" -f 2 | tr -d '"')"
+    echo "$SCRIPT_NAME version $(grep "VERSION=\"[0-9.]*\"" /usr/local/bin/$SCRIPT -m 1 | cut -d "=" -f 2 | tr -d '"')"
     exit 0
 }
 
@@ -118,9 +118,9 @@ UPDATE() {
         exit 1
     fi
     #Grep the version from the downloaded file
-    NEW_VERSION=$(grep "VERSION=" /tmp/$SCRIPT -m 1 | cut -d "=" -f 2 | tr -d '"')
+    NEW_VERSION=$(grep "VERSION=\"[0-9.]*\"" /tmp/$SCRIPT -m 1 | cut -d "=" -f 2 | tr -d '"')
     #Grep the version from the current file
-    CURRENT_VERSION=$(grep "VERSION=" /usr/local/bin/$SCRIPT -m 1 | cut -d "=" -f 2 | tr -d '"')
+    CURRENT_VERSION=$(grep "VERSION=\"[0-9.]*\"" /usr/local/bin/$SCRIPT -m 1 | cut -d "=" -f 2 | tr -d '"')
     #compare the two versions
     if [[ "$NEW_VERSION" == "$CURRENT_VERSION" ]]; then
         echo "You already have the latest version"
