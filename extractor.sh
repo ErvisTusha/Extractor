@@ -1,12 +1,14 @@
 #!/bin/bash
 ######################################################################
-# Author: Ervis Tusha
-# Email: ERVISTUSHA[at]GMAIL.COM
-# Github: Github: https://github.com/ErvisTusha
-# Twitter: https://X.com/ET
-# LinkedIn: https://linkedin.com/in/ErvisTusha
-# License: MIT LICENSE
-
+# Author: Ervis Tusha                                                #
+# Email: ERVISTUSHA[at]GMAIL.COM                                     #
+# Github: Github: https://github.com/ErvisTusha                      #
+# Twitter: https://X.com/ET                                          #
+# LinkedIn: https://linkedin.com/in/ErvisTusha                       #
+# License: MIT LICENSE                                               #
+######################################################################
+#                           FrameWork 1.0.1                          #  
+######################################################################
 #function check if the user has root or sudo privileges
 IS_SUDO() {
     if ! ((EUID == 0)); then
@@ -56,7 +58,7 @@ INSTALL() {
     #check if the user has root or sudo privileges
     IS_SUDO
     #check if /usr/local/bin/$SCRIPT exists
-    if [ -f /usr/local/bin/$SCRIPT ]; then
+    if IS_INSTALLED "$SCRIPT"; then
         echo "$SCRIPT_NAME is already installed"
         #ask the user if they want to update the script else exit
         read -p "Do you want to update the script? [y/n]: " -n 1 -r
@@ -144,7 +146,7 @@ UPDATE() {
 
 #Version
 VERSION="1.0.1"
-
+#PROJECT URL https://github.com/ErvisTusha/extractor
 SCRIPT="extractor"
 #SCRIPT NAME
 SCRIPT_NAME="Extractor"
@@ -159,6 +161,7 @@ USAGE() {
     echo "Extractor version $VERSION"
     echo "Created by: Ervis Tusha"
     echo "Email: ERVISTUSHA[at]GMAIL.COM Github: https://github.com/ErvisTusha Twitter: https://X.com/ET"
+    echo "Github : https://github.com/ErvisTusha/extractor"
     echo "Options:"
     echo "  -h, --help      display this help and exit"
     echo "  -v, --version   output version information and exit"
