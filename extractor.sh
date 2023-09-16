@@ -24,7 +24,6 @@ IS_INSTALLED() {
         return 0
     else
         #return false
-        echo "Error: $1 is required"
         return 1
     fi
 }
@@ -57,11 +56,11 @@ DOWNLOAD() {
 INSTALL() {
     #check if the user has root or sudo privileges
     IS_SUDO
-    #check if /usr/local/bin/$SCRIPT exists
+    #if script is already installed ask the user if they want to update the script else exit
     if IS_INSTALLED "$SCRIPT"; then
         echo "$SCRIPT_NAME is already installed"
         #ask the user if they want to update the script else exit
-        read -p "Do you want to update the script? [y/n]: " -n 1 -r
+        read -p "Do you want to update the $SCRIPT_NAME? [y/n]: " -n 1 -r
         echo ""
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             UPDATE
@@ -76,16 +75,25 @@ INSTALL() {
     chmod +x /usr/local/bin/$SCRIPT
     echo "$SCRIPT_NAME installed successfully"
     #print the version
-    echo "$SCRIPT_NAME version $(grep "VERSION=\"[0-9.]*\"" /usr/local/bin/$SCRIPT -m 1 | cut -d "=" -f 2 | tr -d '"')"
+    echo "$SCRIPT_NAME version $VERSION"
     exit 0
 }
 
 UNINSTALL() {
     #check if the user has root or sudo privileges
     IS_SUDO
-    #check if /usr/local/bin/$SCRIPT exists
-    if [ ! -f /usr/local/bin/$SCRIPT ]; then
+
+    #if script is not installed than exit
+    if ! IS_INSTALLED "$SCRIPT"; then
         echo "$SCRIPT_NAME is not installed"
+        exit 1
+    fi
+
+    #ask the user if they want to uninstall the script else exit
+    read -p "Do you want to uninstall the $SCRIPT_NAME? [y/n]: " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Nn]$ ]]; then
+        echo "Exiting..."
         exit 0
     fi
     #remove /usr/local/bin/$SCRIPT
@@ -98,10 +106,18 @@ UPDATE() {
     #downdload VERSION from github
     #check if the user has root or sudo privileges
     IS_SUDO
-    #if /usr/local/bin/$SCRIPT does not exist then run install
-    if [ ! -f /usr/local/bin/$SCRIPT ]; then
+    #if script is not installed then run install
+    if ! IS_INSTALLED "$SCRIPT"; then
         echo "$SCRIPT_NAME is not installed"
-        INSTALL
+        #ask the user if they want to install the script else exit
+        read -p "Do you want to install the $SCRIPT_NAME? [y/n]: " -n 1 -r
+        echo ""
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            INSTALL
+        else
+            echo "Exiting..."
+            exit 0
+        fi
     fi
 
     #Download the latest version from github to tmp
@@ -119,10 +135,8 @@ UPDATE() {
     fi
     #Grep the version from the downloaded file
     NEW_VERSION=$(grep "VERSION=\"[0-9.]*\"" /tmp/$SCRIPT -m 1 | cut -d "=" -f 2 | tr -d '"')
-    #Grep the version from the current file
-    CURRENT_VERSION=$(grep "VERSION=\"[0-9.]*\"" /usr/local/bin/$SCRIPT -m 1 | cut -d "=" -f 2 | tr -d '"')
     #compare the two versions
-    if [[ "$NEW_VERSION" == "$CURRENT_VERSION" ]]; then
+    if [[ "$NEW_VERSION" == "$VERSION" ]]; then
         echo "You already have the latest version"
         #ask the user if they want to reinstall the script else exit
         read -p "Do you want to reinstall the script? [y/n]: " -n 1 -r
