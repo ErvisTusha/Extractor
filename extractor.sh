@@ -22,10 +22,9 @@ IS_INSTALLED() {
     if command -v $1 >/dev/null 2>&1; then
         #return true
         return 0
-    else
-        #return false
-        return 1
     fi
+    #return false
+    return 1
 }
 
 #function to download files
