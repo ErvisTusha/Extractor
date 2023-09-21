@@ -22,9 +22,16 @@ Extractor is a Bash script utility designed to handle the extraction of various 
 
 ## Installation
 
-Run the following command to install Extractor:
+Run the following steps to install Extractor:
 
 ```bash
+#Download
+wget -q --show-progress https://raw.githubusercontent.com/ErvisTusha/Extractor/main/extractor.sh -O ./extractor.sh
+
+#Change permission
+chmod +x extractor.sh
+
+#Install
 sudo ./extractor.sh install
 ```
 
